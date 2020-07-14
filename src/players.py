@@ -154,10 +154,13 @@ def current_football_bio_player_pull(pageSoup, player_id):
             pass
 
     if joined != None:
-        year_joined = int(joined[len(joined)-4:])
-        month_joined = month_to_number(joined.split(" ")[0])
-        day_joined = int(joined.split(" ")[1].split(",")[0])
-        joined = datetime.date(year_joined, month_joined, day_joined)
+        if joined != "-":
+            year_joined = int(joined[len(joined)-4:])
+            month_joined = month_to_number(joined.split(" ")[0])
+            day_joined = int(joined.split(" ")[1].split(",")[0])
+            joined = datetime.date(year_joined, month_joined, day_joined)
+        else:
+            joined =  None
 
     if contract_expires != None:
         if contract_expires != "-":
@@ -232,7 +235,10 @@ def transfer_history_pull(pageSoup, player_id):
             for row in box.select('tr')[2:]:
                 try:
                     market_values_value = row.select('td.zelle-mw')[0].get_text()#.select('img')[0].get('alt')
-
+                    
+                    if "â‚¬" in market_values_value:
+                        market_values_value = market_values_value.replace("â‚¬", "€")
+                    
                     if "m" in market_values_value:
                         market_values_value = int( float(market_values_value.replace("€","").replace("m","")) * 1000000 )
                     elif "k" in market_values_value:
